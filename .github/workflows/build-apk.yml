@@ -35,10 +35,18 @@ jobs:
       - name: Install dependencies
         run: flutter pub get
 
-      - name: Increase Gradle Heap Size
+      - name: Increase Gradle Heap Size via Python
         run: |
-          sed -i '/org.gradle.jvmargs/d' android/gradle.properties
-          echo "org.gradle.jvmargs=-Xmx4096m -XX:+HeapDumpOnOutOfMemoryError" >> android/gradle.properties
+          python -c "
+          path = 'android/gradle.properties'
+          with open(path, 'r') as f:
+              content = f.read()
+          lines = [l for l in content.splitlines() if 'org.gradle.jvmargs' not in l]
+          clean_content = '\n'.join(lines) + '\n'
+          clean_content += 'org.gradle.jvmargs=-Xmx4096m -XX:+HeapDumpOnOutOfMemoryError\n'
+          with open(path, 'w') as f:
+              f.write(clean_content)
+          "
 
       - name: Build Debug APK
         run: flutter build apk --debug --android-skip-build-dependency-validation
