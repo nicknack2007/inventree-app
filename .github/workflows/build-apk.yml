@@ -1,0 +1,21 @@
+name: Build InvenTree APK
+
+on:
+  workflow_dispatch: # Erlaubt den manuellen Start über die Oberfläche
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: 'stable'
+          cache: true
+      - run: flutter pub get
+      - run: flutter build apk --release
+      - uses: actions/upload-artifact@v4
+        with:
+          name: inventree-release-apk
+          path: build/app/outputs/flutter-apk/app-release.apk
+          
