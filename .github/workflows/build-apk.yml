@@ -36,7 +36,9 @@ jobs:
         run: flutter pub get
 
       - name: Increase Gradle Heap Size
-        run: printf "\norg.gradle.jvmargs=-Xmx2048m\n" >> android/gradle.properties
+        run: |
+          sed -i '/org.gradle.jvmargs/d' android/gradle.properties
+          echo "org.gradle.jvmargs=-Xmx4096m -XX:+HeapDumpOnOutOfMemoryError" >> android/gradle.properties
 
       - name: Build Debug APK
         run: flutter build apk --debug --android-skip-build-dependency-validation
