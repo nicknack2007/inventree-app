@@ -48,11 +48,11 @@ jobs:
               f.write(clean_content)
           "
 
-      - name: Build Debug APK
-        run: flutter build apk --debug --android-skip-build-dependency-validation
+      - name: Build Release APK
+        run: flutter build apk --release --android-skip-build-dependency-validation
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: debug-apk
-          path: build/app/outputs/flutter-apk/app-debug.apk
+          name: release-apk
+          path: build/app/outputs/flutter-apk/app-release.apk
