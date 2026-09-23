@@ -1,5 +1,4 @@
 name: Build APK
-
 on:
   workflow_dispatch:
 
@@ -48,11 +47,11 @@ jobs:
               f.write(clean_content)
           "
 
-      - name: Build Release APK
-        run: flutter build apk --release --no-codesign --android-skip-build-dependency-validation
+      - name: Build Debug APK
+        run: flutter build apk --debug --android-skip-build-dependency-validation
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: release-apk
-          path: build/app/outputs/flutter-apk/app-release.apk
+          name: debug-apk
+          path: build/app/outputs/flutter-apk/app-debug.apk
