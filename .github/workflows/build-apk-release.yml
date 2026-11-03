@@ -47,17 +47,20 @@ jobs:
               f.write(clean_content)
           "
 
-      - name: Decode Keystore File
+      - name: Generate Keystore Directly
         run: |
-          # Verhindert Beschädigungen der Datei durch Zeilenumbrüche beim Dekodieren
-          printf '%s' "${{ secrets.SIGNING_KEY }}" | base64 --decode > android/app/keystore.jks
+          # Wir erzeugen das Zertifikat frisch im Build-Prozess mit festen Werten
+          keytool -genkey -v -keystore android/app/keystore.jks -keyalg RSA -keysize 2048 -validity 10000 \
+            -alias inventree-release-key -storepass inventreepass123 -keypass inventreepass123 \
+            -dname "CN=InvenTree, OU=None, O=None, L=None, S=None, C=DE"
 
       - name: Create key.properties Config
         run: |
+          # Diese Datei füttern wir nun mit exakt den gleichen Werten von oben
           cat <<EOF > android/key.properties
-          storePassword=${{ secrets.KEYSTORE_PASSWORD }}
-          keyPassword=${{ secrets.KEY_PASSWORD }}
-          keyAlias=${{ secrets.KEY_ALIAS }}
+          storePassword=inventreepass123
+          keyPassword=inventreepass123
+          keyAlias=inventree-release-key
           storeFile=keystore.jks
           EOF
 
