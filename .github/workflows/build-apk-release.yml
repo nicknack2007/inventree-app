@@ -1,4 +1,4 @@
-name: Build APK Release
+name: Build APK
 on:
   workflow_dispatch:
 
@@ -49,15 +49,20 @@ jobs:
 
       - name: Decode Keystore File
         run: |
+          # Erstellt die Zertifikatsdatei im richtigen Unterordner
           echo "${{ secrets.SIGNING_KEY }}" | base64 --decode > android/app/keystore.jks
 
+      - name: Create key.properties Config
+        run: |
+          # Erstellt die Konfigurationsdatei, nach der InvenTree sucht
+          cat <<EOF > android/key.properties
+          storePassword=${{ secrets.KEYSTORE_PASSWORD }}
+          keyPassword=${{ secrets.KEY_PASSWORD }}
+          keyAlias=${{ secrets.KEY_ALIAS }}
+          storeFile=app/keystore.jks
+          EOF
+
       - name: Build Release APK
-        env:
-          KEYSTORE_FILE: "keystore.jks"
-          KEYSTORE_PATH: "keystore.jks"
-          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
-          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
-          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
         run: |
           flutter build apk --release --android-skip-build-dependency-validation
 
