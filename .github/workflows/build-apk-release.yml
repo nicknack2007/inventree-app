@@ -49,17 +49,16 @@ jobs:
 
       - name: Decode Keystore File
         run: |
-          # Erstellt die Zertifikatsdatei im richtigen Unterordner
           echo "${{ secrets.SIGNING_KEY }}" | base64 --decode > android/app/keystore.jks
 
       - name: Create key.properties Config
         run: |
-          # Erstellt die Konfigurationsdatei, nach der InvenTree sucht
+          # Pfad angepasst auf keystore.jks ohne das doppelte 'app/'
           cat <<EOF > android/key.properties
           storePassword=${{ secrets.KEYSTORE_PASSWORD }}
           keyPassword=${{ secrets.KEY_PASSWORD }}
           keyAlias=${{ secrets.KEY_ALIAS }}
-          storeFile=app/keystore.jks
+          storeFile=keystore.jks
           EOF
 
       - name: Build Release APK
