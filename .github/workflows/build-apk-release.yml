@@ -6,6 +6,18 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
+      - name: Maximize Build Space
+        # Löscht ungenutzte vorinstallierte Software auf dem GitHub-Server, um Platz zu schaffen
+        uses: easimon/maximize-build-space@v10
+        with:
+          root-reserve-mb: 5120
+          swap-size-mb: 1024
+          remove-dotnet: 'true'
+          remove-android: 'false' # Das brauchen wir für den Build, also behalten
+          remove-haskell: 'true'
+          remove-codeql: 'true'
+          remove-docker-images: 'true'
+
       - uses: actions/checkout@v4
 
       - name: Set up Python
@@ -49,14 +61,12 @@ jobs:
 
       - name: Generate Keystore Directly
         run: |
-          # Wir erzeugen das Zertifikat frisch im Build-Prozess mit festen Werten
           keytool -genkey -v -keystore android/app/keystore.jks -keyalg RSA -keysize 2048 -validity 10000 \
             -alias inventree-release-key -storepass inventreepass123 -keypass inventreepass123 \
             -dname "CN=InvenTree, OU=None, O=None, L=None, S=None, C=DE"
 
       - name: Create key.properties Config
         run: |
-          # Diese Datei füttern wir nun mit exakt den gleichen Werten von oben
           cat <<EOF > android/key.properties
           storePassword=inventreepass123
           keyPassword=inventreepass123
